@@ -10,7 +10,8 @@ import (
 )
 
 type App struct {
-	Router *mux.Router
+	Router      *mux.Router
+	Middlewares *Middleware
 }
 
 type ShortenLinkRequest struct {
