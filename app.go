@@ -15,11 +15,11 @@ type App struct {
 
 type ShortenLinkRequest struct {
 	Url                 string `json:"url" validate:"nonzero"`
-	ExpirationInMinutes int64  `json:"expirationInMinutes" validate:"min=0"`
+	ExpirationInMinutes int64  `json:"expiration_in_minutes" validate:"min=0"`
 }
 
 type ShortenLinkResponse struct {
-	ShortLink string `json:"shortLink"`
+	ShortLink string `json:"short_link"`
 }
 
 func (app *App) Initialise() {
