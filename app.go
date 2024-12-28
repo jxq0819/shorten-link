@@ -40,15 +40,14 @@ func (app *App) initialiseRoutes() {
 func (app *App) createShortLink(writer http.ResponseWriter, request *http.Request) {
 	var shortenLinkRequest ShortenLinkRequest
 	if err := json.NewDecoder(request.Body).Decode(&shortenLinkRequest); err != nil {
-		respondWithError(writer, http.StatusBadRequest, fmt.Errorf("parse parameters failed: %v", request))
+		respondWithError(writer, StatusError{Code: http.StatusBadRequest, Err: fmt.Errorf("parse parameters failed: %v", request.Body)})
 		return
 	}
 	if err := validator.Validate(shortenLinkRequest); err != nil {
-		respondWithError(writer, http.StatusBadRequest, fmt.Errorf("validate parameters failed: %v", request))
+		respondWithError(writer, StatusError{Code: http.StatusBadRequest, Err: fmt.Errorf("validate parameters failed: %v", shortenLinkRequest)})
 		return
 	}
 	defer request.Body.Close()
-	fmt.Printf("%v\n", shortenLinkRequest)
 }
 
 func (app *App) getShortLinkInfo(writer http.ResponseWriter, request *http.Request) {
@@ -62,7 +61,7 @@ func (app *App) redirect(writer http.ResponseWriter, request *http.Request) {
 	fmt.Printf("shortLink: %s\n", vars["shortLink"])
 }
 
-func respondWithError(writer http.ResponseWriter, code int, err error) {
+func respondWithError(writer http.ResponseWriter, err error) {
 	switch e := err.(type) {
 	case Error:
 		log.Printf("HTTP %d - %s\n", e.Status(), e)
