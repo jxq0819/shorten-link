@@ -2,6 +2,6 @@ package main
 
 func main() {
 	a := App{}
-	a.Initialise()
+	a.Initialise(getEnv())
 	a.Run(":8000")
 }

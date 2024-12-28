@@ -12,6 +12,7 @@ import (
 type App struct {
 	Router      *mux.Router
 	Middlewares *Middleware
+	Config      *Env
 }
 
 type ShortenLinkRequest struct {
@@ -23,8 +24,9 @@ type ShortenLinkResponse struct {
 	ShortLink string `json:"short_link"`
 }
 
-func (app *App) Initialise() {
+func (app *App) Initialise(env *Env) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	app.Config = env
 	app.Router = mux.NewRouter()
 	app.initialiseRoutes()
 }
