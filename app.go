@@ -48,17 +48,34 @@ func (app *App) createShortLink(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 	defer request.Body.Close()
+
+	shortLink, err := app.Config.S.Shorten(shortenLinkRequest.Url, shortenLinkRequest.ExpirationInMinutes)
+	if err != nil {
+		respondWithError(writer, err)
+	} else {
+		respondWithJson(writer, http.StatusCreated, ShortenLinkResponse{ShortLink: shortLink})
+	}
 }
 
 func (app *App) getShortLinkInfo(writer http.ResponseWriter, request *http.Request) {
 	vals := request.URL.Query()
-	info := vals.Get("shortLink")
-	fmt.Printf("shortLink: %s\n", info)
+	shortLink := vals.Get("shortLink")
+	detail, err := app.Config.S.ShortenLinkInfo(shortLink)
+	if err != nil {
+		respondWithError(writer, err)
+	} else {
+		respondWithJson(writer, http.StatusOK, detail)
+	}
 }
 
 func (app *App) redirect(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
-	fmt.Printf("shortLink: %s\n", vars["shortLink"])
+	url, err := app.Config.S.Unshorten(vars["shortLink"])
+	if err != nil {
+		respondWithError(writer, err)
+	} else {
+		http.Redirect(writer, request, url, http.StatusTemporaryRedirect)
+	}
 }
 
 func respondWithError(writer http.ResponseWriter, err error) {
